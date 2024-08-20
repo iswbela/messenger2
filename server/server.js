@@ -19,5 +19,5 @@ app.use("/api/auth", authRoutes);
 
 app.listen(PORT, () => {
   connectToMongoDB();
-  console.log(`running on port localhost:${PORT}`)
+  console.log(`running on http://localhost:${PORT}`);
 });
