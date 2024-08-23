@@ -3,15 +3,15 @@ import Message from "../models/message.model.js";
 
 export const sendMessage = async (req, res) => {
     try {
-        const {message} = req.body;
-        const {id: receiverId} = req.params;
+        const { message } = req.body;
+        const { id: receiverId } = req.params;
         const senderId = req.user._id;
 
         let conversation = await Conversation.findOne({
-            participants: { $all: [senderId, receiverId]},
+            participants: { $all: [senderId, receiverId] },
         })
 
-        if(!conversation){
+        if (!conversation) {
             conversation = Conversation.create({
                 participants: [senderId, receiverId]
             })
@@ -23,17 +23,16 @@ export const sendMessage = async (req, res) => {
             message
         })
 
-        if(newMessage){
+        if (newMessage) {
             conversation.messages.push(newMessage._id);
         }
-        
-        await conversation.save();
-        await newMessage.save();
+
+        Promise.all([conversation.save(), newMessage.save()]);
 
         res.status(201).json(newMessage);
 
     } catch (error) {
         console.log("msg controller", error.message);
-        res.status(500).json({error: "Internal Server Error"});
+        res.status(500).json({ error: "Internal Server Error" });
     }
 }
